@@ -1,10 +1,14 @@
 <?php
 
-namespace VendorName\Skeleton\Tests;
+namespace Tests;
 
+use Closure;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Schema\Blueprint;
 use Orchestra\Testbench\TestCase as Orchestra;
-use VendorName\Skeleton\SkeletonServiceProvider;
+use Guava\Capabilities\CapabilitiesServiceProvider;
+use Tests\Fixtures\Models\Tenant;
+use Tests\Fixtures\Models\User;
 
 class TestCase extends Orchestra
 {
@@ -13,24 +17,32 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'VendorName\\Skeleton\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn (
+                string $modelName,
+            ) => 'Tests\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
     }
 
     protected function getPackageProviders($app)
     {
         return [
-            SkeletonServiceProvider::class,
+            CapabilitiesServiceProvider::class,
         ];
     }
 
     public function getEnvironmentSetUp($app)
     {
         config()->set('database.default', 'testing');
+        config()->set('capabilities.tenancy', true);
+        config()->set('capabilities.user_class', User::class);
+        config()->set('capabilities.tenant_class', Tenant::class);
 
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_skeleton_table.php.stub';
-        $migration->up();
-        */
+        $app->useDatabasePath(__DIR__.'/Fixtures/database');
+    }
+
+    protected function defineDatabaseMigrations()
+    {
+        $this->loadMigrationsFrom(__DIR__ . '/Fixtures/database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     }
 }
