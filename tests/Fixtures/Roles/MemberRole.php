@@ -4,8 +4,8 @@ namespace Tests\Fixtures\Roles;
 
 use Guava\Capabilities\Auth\RoleRegistration;
 
-class MemberRole extends RoleRegistration {
-
+class MemberRole extends RoleRegistration
+{
     public function capabilities(): array
     {
         return [

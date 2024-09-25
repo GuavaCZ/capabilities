@@ -11,6 +11,7 @@ abstract class RoleRegistration
     abstract public function capabilities(): array;
 
     abstract public function name(): string;
+
     abstract public function title(): string;
 
     public function defaultAttributes(): array

@@ -6,7 +6,8 @@ use Guava\Capabilities\Concerns\HasRolesAndCapabilities;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Document extends Model {
+class Document extends Model
+{
     use HasFactory;
     use HasRolesAndCapabilities;
 
@@ -15,5 +16,4 @@ class Document extends Model {
     ];
 
     public $timestamps = false;
-
 }

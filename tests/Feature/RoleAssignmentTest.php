@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Guava\Capabilities\Facades\Capabilities;
-use Guava\Capabilities\Facades\RoleBuilder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Fixtures\Models\Role;
 use Tests\Fixtures\Models\Tenant;
@@ -22,7 +21,7 @@ class RoleAssignmentTest extends TestCase
 
         $user->role('my-custom-role')->createIfNotExists()->assign();
         // old way
-//        $user->assignRole('my-custom-role');
+        //        $user->assignRole('my-custom-role');
 
         $this->assertDatabaseHas('roles', [
             'name' => 'my-custom-role',
@@ -47,7 +46,7 @@ class RoleAssignmentTest extends TestCase
 
         $user->role('my-custom-role')->owner($tenant)->createAndAssign();
         // old way
-//        $user->assignRole('my-custom-role', $tenant);
+        //        $user->assignRole('my-custom-role', $tenant);
 
         $this->assertDatabaseHas('roles', [
             'name' => 'my-custom-role',
@@ -77,9 +76,10 @@ class RoleAssignmentTest extends TestCase
             ->capabilities(['course.view', 'course.create'])
             ->createAndAssign()
 //            ->syncCapabilities()
-        ->get();
+            ->get()
+        ;
         // old way
-//        $tenant->assignRole('my-custom-role', $tenant, ['course.view', 'course.create']);
+        //        $tenant->assignRole('my-custom-role', $tenant, ['course.view', 'course.create']);
 
         $this->assertDatabaseHas('roles', [
             'name' => 'my-custom-role',
@@ -120,7 +120,7 @@ class RoleAssignmentTest extends TestCase
 
         $user->role(AdminRole::class)->createAndAssign();
         // Old way
-//        $user->assignRole(AdminRole::class);
+        //        $user->assignRole(AdminRole::class);
 
         $this->assertDatabaseHas('roles', [
             'name' => 'admin',
@@ -148,7 +148,7 @@ class RoleAssignmentTest extends TestCase
 
         $user->role(AdminRole::class)->owner($tenant)->createAndAssign();
         // Old way
-//        $user->assignRole(AdminRole::class, $tenant);
+        //        $user->assignRole(AdminRole::class, $tenant);
 
         $this->assertDatabaseHas('roles', [
             'name' => 'admin',
@@ -175,8 +175,8 @@ class RoleAssignmentTest extends TestCase
 
         $user->role(AdminRole::class)->tenant($tenant)->createAndAssign();
         // Old way, not even working
-//        $user->role(AdminRole::class);
-//        $user->assignRole(AdminRole::class, $tenant);
+        //        $user->role(AdminRole::class);
+        //        $user->assignRole(AdminRole::class, $tenant);
         $this->assertDatabaseHas('roles', [
             'name' => 'admin',
             'tenant_id' => null,

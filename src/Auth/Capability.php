@@ -2,7 +2,7 @@
 
 namespace Guava\Capabilities\Auth;
 
-use \Guava\Capabilities\Contracts\Capability as CapabilityContract;
+use Guava\Capabilities\Contracts\Capability as CapabilityContract;
 
 enum Capability: string implements CapabilityContract
 {

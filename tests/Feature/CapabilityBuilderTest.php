@@ -28,7 +28,8 @@ class CapabilityBuilderTest extends TestCase
         $this->assertDatabaseCount('assigned_capabilities', 0);
     }
 
-    public function test_can_create_and_assign_custom_capability() {
+    public function test_can_create_and_assign_custom_capability()
+    {
         /** @var Role $role */
         $role = Role::factory()->create();
 
@@ -49,7 +50,8 @@ class CapabilityBuilderTest extends TestCase
         $this->assertDatabaseCount('assigned_capabilities', 1);
     }
 
-    public function test_can_create_direct_capability() {
+    public function test_can_create_direct_capability()
+    {
         /** @var Role $role */
         $role = Role::factory()->create();
 
@@ -63,7 +65,8 @@ class CapabilityBuilderTest extends TestCase
         $this->assertDatabaseCount('assigned_capabilities', 0);
     }
 
-    public function test_can_create_model_capability() {
+    public function test_can_create_model_capability()
+    {
 
         /** @var Role $role */
         $role = Role::factory()->create();
@@ -78,7 +81,8 @@ class CapabilityBuilderTest extends TestCase
         $this->assertDatabaseCount('assigned_capabilities', 0);
     }
 
-    public function test_can_create_record_capability() {
+    public function test_can_create_record_capability()
+    {
 
         /** @var Role $role */
         $role = Role::factory()->create();
@@ -95,14 +99,14 @@ class CapabilityBuilderTest extends TestCase
         $this->assertDatabaseCount('assigned_capabilities', 0);
     }
 
-    public function test_can_create_multiple_capabilities() {
+    public function test_can_create_multiple_capabilities()
+    {
 
         /** @var Role $role */
         $role = Role::factory()->create();
 
-//        $role->capability()
+        //        $role->capability()
     }
-
 
     public function test_can_assign_same_capability_to_multiple_roles()
     {

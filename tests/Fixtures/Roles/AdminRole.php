@@ -2,11 +2,10 @@
 
 namespace Tests\Fixtures\Roles;
 
-use Guava\Capabilities\Auth\RoleRegistration;
 use Guava\Capabilities\Contracts\Role;
 
-class AdminRole implements Role {
-
+class AdminRole implements Role
+{
     public function capabilities(): array
     {
         return [

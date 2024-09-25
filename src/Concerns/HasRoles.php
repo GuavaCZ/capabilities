@@ -86,5 +86,4 @@ trait HasRoles
             ->assignee($this)
         ;
     }
-
 }

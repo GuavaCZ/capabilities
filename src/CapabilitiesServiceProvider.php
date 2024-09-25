@@ -2,7 +2,6 @@
 
 namespace Guava\Capabilities;
 
-use Guava\Capabilities\Builders\RoleBuilder;
 use Guava\Capabilities\Commands\SyncCapabilitiesCommand;
 use Guava\Capabilities\Managers\CapabilityManager;
 use Guava\Capabilities\Managers\RoleManager;

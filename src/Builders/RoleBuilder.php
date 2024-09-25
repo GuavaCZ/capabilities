@@ -18,9 +18,9 @@ class RoleBuilder implements Builder
 {
     use CanCreateIfNotExists;
     use HasAssignee;
+    use HasCapabilities;
     use HasOwner;
     use HasTenant;
-    use HasCapabilities;
 
     protected RoleContract $configuration;
 
@@ -94,8 +94,9 @@ class RoleBuilder implements Builder
         $model = $this->get();
         if ($model) {
             $this->getCapabilities()
-                ->each(fn (string|Capability $capability) => $model->capability($capability)
-                ->create()->assign());
+                ->each(fn (string | Capability $capability) => $model->capability($capability)
+                    ->create()->assign())
+            ;
         }
 
         return $this;

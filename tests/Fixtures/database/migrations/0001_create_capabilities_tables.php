@@ -1,13 +1,13 @@
 <?php
 
-
 use Guava\Capabilities\Models\Capability;
 use Guava\Capabilities\Models\Role;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up()
     {
 
@@ -27,35 +27,40 @@ return new class extends Migration {
                 $table->foreignIdFor(config('capabilities.tenant_class'))
                     ->nullable()
                     ->constrained()
-                    ->cascadeOnDelete();
+                    ->cascadeOnDelete()
+                ;
             }
         });
 
         Schema::create('assigned_capabilities', function (Blueprint $table) {
             $table->foreignIdFor(Capability::class)
                 ->constrained()
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+            ;
             $table->morphs('assignee');
 
             if (config('capabilities.tenancy', false)) {
                 $table->foreignIdFor(config('capabilities.tenant_class'))
                     ->nullable()
                     ->constrained()
-                    ->cascadeOnDelete();
+                    ->cascadeOnDelete()
+                ;
             }
         });
 
         Schema::create('assigned_roles', function (Blueprint $table) {
             $table->foreignIdFor(Role::class)
                 ->constrained()
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+            ;
             $table->morphs('assignee');
 
             if (config('capabilities.tenancy', false)) {
                 $table->foreignIdFor(config('capabilities.tenant_class'))
                     ->nullable()
                     ->constrained()
-                    ->cascadeOnDelete();
+                    ->cascadeOnDelete()
+                ;
             }
         });
     }

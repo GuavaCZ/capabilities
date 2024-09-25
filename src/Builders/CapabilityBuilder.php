@@ -21,7 +21,7 @@ class CapabilityBuilder implements Builder
 
     protected ?Capability $model = null;
 
-    public function __construct(string | CapabilityContract $capability, string|Model|null $model = null)
+    public function __construct(string | CapabilityContract $capability, string | Model | null $model = null)
     {
         $this->configuration = static::configuration($capability instanceof CapabilityContract
             ? $capability->getName()
