@@ -2,9 +2,9 @@
 
 namespace Guava\Capabilities\Contracts;
 
-interface Capability
+interface Role
 {
-    public function getModel(): ?string;
 
     public function getName(): string;
+
 }

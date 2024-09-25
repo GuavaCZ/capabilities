@@ -3,9 +3,8 @@
 namespace Tests\Fixtures\Roles;
 
 use Guava\Capabilities\Auth\RoleRegistration;
-use Guava\Capabilities\Contracts\Role;
 
-class AdminRole implements Role {
+class MemberRole extends RoleRegistration {
 
     public function capabilities(): array
     {
@@ -17,8 +16,13 @@ class AdminRole implements Role {
         ];
     }
 
-    public function getName(): string
+    public function name(): string
     {
         return 'admin';
+    }
+
+    public function title(): string
+    {
+        return 'Administrator';
     }
 }

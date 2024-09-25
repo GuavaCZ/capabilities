@@ -2,7 +2,9 @@
 
 namespace Guava\Capabilities\Auth;
 
-enum Capability: string implements CapabilityRegistration
+use \Guava\Capabilities\Contracts\Capability as CapabilityContract;
+
+enum Capability: string implements CapabilityContract
 {
     case Access = 'viewAny';
     case Create = 'create';
@@ -16,4 +18,18 @@ enum Capability: string implements CapabilityRegistration
     case ForceDeleteBulk = 'forceDeleteBulk';
     case Replicate = 'replicate';
 
+    public function model(): ?string
+    {
+        return null;
+    }
+
+    public function getModel(): ?string
+    {
+        return null;
+    }
+
+    public function getName(): string
+    {
+        return $this->value;
+    }
 }

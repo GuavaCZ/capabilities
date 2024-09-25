@@ -24,20 +24,21 @@ class Role extends Model
 
     public function users(): MorphToMany
     {
+        $pivot = [];
+
+        if (config('capabilities.tenancy', false)) {
+            $pivot[] = config('capabilities.tenant_column', 'tenant_id');
+        }
+
         return $this
             ->morphedByMany(
                 config('capabilities.user_class', User::class),
                 'assignee',
                 'assigned_roles',
                 'assignee_id',
-                'id',
+                'role_id',
             )
-            ->when(
-                config('capabilities.tenancy', false),
-                fn (MorphToMany $query) => $query->withPivot([
-                    config('capabilities.tenant_column', 'tenant_id'),
-                ]),
-            )
+            ->withPivot($pivot)
         ;
     }
 }
