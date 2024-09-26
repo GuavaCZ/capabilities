@@ -3,133 +3,102 @@
 namespace Guava\Capabilities\Builders;
 
 use Guava\Capabilities\Builders\Concerns\CanCreateIfNotExists;
-use Guava\Capabilities\Builders\Concerns\HasAssignee;
+use Guava\Capabilities\Builders\Concerns\HasAssignees;
 use Guava\Capabilities\Builders\Concerns\HasCapabilities;
 use Guava\Capabilities\Builders\Concerns\HasOwner;
 use Guava\Capabilities\Builders\Concerns\HasTenant;
-use Guava\Capabilities\Contracts\Capability;
 use Guava\Capabilities\Contracts\Role as RoleContract;
-use Guava\Capabilities\Exceptions\InvalidRoleArgumentException;
 use Guava\Capabilities\Facades\Capabilities;
 use Guava\Capabilities\Models\Role;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class RoleBuilder implements Builder
+class RoleBuilder
 {
     use CanCreateIfNotExists;
-    use HasAssignee;
+    use HasAssignees;
+    use HasCapabilities;
     use HasOwner;
     use HasTenant;
-    use HasCapabilities;
 
-    protected RoleContract $configuration;
+    final private function __construct(
+        private RoleConfiguration $configuration,
+    ) {}
 
-    protected ?Role $model = null;
-
-    public function __construct(string | RoleContract $role)
+    public function create(): Role
     {
-        if (is_string($role) && ! class_exists($role)) {
-            $role = static::configuration($role);
+        /** @var Role $record */
+        $record = Capabilities::role()->firstOrCreate($this->getColumns());
+
+        $ids = $this->getCapabilities()
+            ->map(
+                fn (CapabilityConfiguration $configuration) => CapabilityBuilder::fromConfiguration($configuration)->create()
+            )
+            ->pluck('id')
+        ;
+
+        if (! empty($ids)) {
+            $record->assignedCapabilities()->syncWithPivotValues(
+                $ids,
+                $this->getPivotColumns(),
+                false,
+            );
         }
 
-        if (is_string($role) && class_exists($role)) {
-            $role = new $role;
-        }
-
-        if ($role instanceof RoleContract) {
-            $this->configuration = $role;
-        } else {
-            throw InvalidRoleArgumentException::make();
-        }
+        return $record;
     }
 
-    public function assign(?Model $assignee = null, ?Model $tenant = null): static
+    public function find(): ?Role
     {
-        $assignee ??= $this->getAssignee();
-        if (! $assignee) {
-            return $this;
-        }
-
-        $tenant ??= $this->getTenant() ?? $this->getOwner();
-
-        $model = $this->get();
-
-        if (! $model && $this->shouldCreateIfNotExists()) {
-            $model = $this->create()->get();
-        }
-
-        if ($model) {
-            $assignee->assignRole($model, $tenant);
-        }
-
-        return $this;
+        return Capabilities::role()->firstWhere($this->getColumns());
     }
 
-    public function create(): static
+    public function assign(): Role
+    {
+        /** @var Role $record */
+        $record = $this->shouldCreateIfNotExists()
+            ? $this->create()
+            : $this->find();
+
+        if (! $record) {
+            throw new ModelNotFoundException('Role could not be found');
+        }
+
+        $record->users()->syncWithPivotValues(
+            $this->getAssignees()->pluck('id'),
+            $this->getPivotColumns(),
+            false,
+        );
+
+        return $record;
+    }
+
+    private function getColumns(): array
     {
         $columns = [
             'name' => $this->configuration->getName(),
         ];
 
-        if ($owner = $this->getOwner()) {
-            $columns[config('capabilities.tenant_column')] = $owner->getKey();
+        if (config('capabilities.tenancy', false)) {
+            $columns[config('capabilities.tenant_column')] = $this->getOwner()?->getKey();
         }
 
-        $this->model = Capabilities::role()->create($columns);
-
-        $this->syncCapabilities();
-
-        // Assign can safely be called, since it verifies whether assignee is set
-        return $this->assign();
+        return $columns;
     }
 
-    public function createAndAssign(?Model $assignee = null, ?Model $tenant = null): static
+    private function getPivotColumns(): array
     {
-        return $this->createIfNotExists()->assign($assignee, $tenant);
-    }
+        $columns = [];
 
-    public function syncCapabilities(): static
-    {
-        /** @var Role $model */
-        $model = $this->get();
-        if ($model) {
-            $this->getCapabilities()
-                ->each(fn (string|Capability $capability) => $model->capability($capability)
-                ->create()->assign());
+        if (config('capabilities.tenancy', false)) {
+            $tenant = $this->getTenant() ?? $this->getOwner();
+            $columns[config('capabilities.tenant_column', 'tenant_id')] = $tenant?->getKey();
         }
 
-        return $this;
+        return $columns;
     }
 
-    public function get(): ?Model
+    public static function of(string | RoleContract $role): static
     {
-        return $this->model ?? $this->find();
-    }
-
-    private function find(): ?Role
-    {
-        return Capabilities::role()->firstWhere([
-            'name' => $this->configuration->getName(),
-        ]);
-    }
-
-    public static function of(string | RoleContract $role)
-    {
-        return app(static::class, ['role' => $role]);
-    }
-
-    private static function configuration(string $name): RoleContract
-    {
-        return new class($name) implements RoleContract
-        {
-            public function __construct(
-                private string $name
-            ) {}
-
-            public function getName(): string
-            {
-                return $this->name;
-            }
-        };
+        return new static(RoleConfiguration::make($role));
     }
 }

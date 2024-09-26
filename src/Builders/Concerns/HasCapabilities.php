@@ -2,15 +2,27 @@
 
 namespace Guava\Capabilities\Builders\Concerns;
 
+use Guava\Capabilities\Builders\CapabilityConfiguration;
+use Guava\Capabilities\Contracts\Capability as CapabilityContract;
+use Guava\Capabilities\Models\Capability;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 trait HasCapabilities
 {
-    private ?Collection $capabilities = null;
+    private Collection $capabilities;
 
-    public function capabilities(array | Collection $capabilities): static
+    public function capability(string | CapabilityContract | Capability $capability, string | Model | null $record = null): static
     {
-        $this->capabilities = collect($capabilities);
+        $this->capabilities ??= collect();
+        $this->capabilities->push(CapabilityConfiguration::make($capability, $record));
+
+        return $this;
+    }
+
+    public function capabilities(array | Collection $capabilities, string | Model | null $record = null): static
+    {
+        collect($capabilities)->each(fn ($capability) => $this->capability($capability, $record));
 
         return $this;
     }

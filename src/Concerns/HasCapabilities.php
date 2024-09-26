@@ -3,6 +3,7 @@
 namespace Guava\Capabilities\Concerns;
 
 use Guava\Capabilities\Builders\CapabilityBuilder;
+use Guava\Capabilities\Builders\CapabilityConfiguration;
 use Guava\Capabilities\Contracts\Capability as CapabilityContract;
 use Guava\Capabilities\Exceptions\TenancyNotEnabledException;
 use Guava\Capabilities\Facades\CapabilityManager;
@@ -32,11 +33,11 @@ trait HasCapabilities
         ;
     }
 
-    public function hasCapability(CapabilityContract $capability, ?string $model = null, ?Model $tenant = null): bool
+    public function hasCapability(string|CapabilityContract $capability, ?string $model = null, ?Model $tenant = null): bool
     {
         return $this->assignedCapabilities()
-            ->wherePivot('organization_id', $tenant?->id)
-            ->where('name', CapabilityManager::get($capability, $model))
+            ->wherePivot(config('capabilities.tenant_column', 'tenant_id'), $tenant?->getKey())
+            ->where('name', CapabilityConfiguration::make($capability, $model)->getName())
             ->exists()
         ;
     }

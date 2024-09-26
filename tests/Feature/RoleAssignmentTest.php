@@ -76,8 +76,53 @@ class RoleAssignmentTest extends TestCase
             ->owner($tenant)
             ->capabilities(['course.view', 'course.create'])
             ->createAndAssign()
-//            ->syncCapabilities()
-        ->get();
+            ->get();
+        // old way
+//        $tenant->assignRole('my-custom-role', $tenant, ['course.view', 'course.create']);
+
+        $this->assertDatabaseHas('roles', [
+            'name' => 'my-custom-role',
+            'tenant_id' => $tenant->getKey(),
+        ]);
+
+        $this->assertDatabaseHas('assigned_roles', [
+            'role_id' => Role::firstWhere('name', 'my-custom-role')->getKey(),
+            'assignee_type' => $user->getMorphClass(),
+            'assignee_id' => $user->getKey(),
+            'tenant_id' => $tenant->getKey(),
+        ]);
+
+        $this->assertDatabaseHas('capabilities', [
+            'name' => 'course.view',
+        ]);
+        $this->assertDatabaseHas('capabilities', [
+            'name' => 'course.create',
+        ]);
+        $this->assertDatabaseHas('assigned_capabilities', [
+            'capability_id' => Capabilities::capability()->firstWhere('name', 'course.view')->getKey(),
+            'assignee_type' => $role->getMorphClass(),
+            'assignee_id' => $role->getKey(),
+            'tenant_id' => null,
+        ]);
+
+        $this->assertDatabaseCount('roles', 1);
+        $this->assertDatabaseCount('assigned_roles', 1);
+        $this->assertDatabaseCount('capabilities', 2);
+        $this->assertDatabaseCount('assigned_capabilities', 2);
+    }
+
+    public function test_can_assign_custom_tenant_role_with_record_capabilities()
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        /** @var Tenant $tenant */
+        $tenant = Tenant::factory()->create();
+
+        $role = $user->role('my-custom-role')
+            ->owner($tenant)
+            ->capabilities(['course.view', 'course.create'])
+            ->createAndAssign()
+            ->get();
         // old way
 //        $tenant->assignRole('my-custom-role', $tenant, ['course.view', 'course.create']);
 

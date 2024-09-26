@@ -6,6 +6,8 @@ use Guava\Capabilities\Builders\RoleBuilder;
 use Guava\Capabilities\Commands\SyncCapabilitiesCommand;
 use Guava\Capabilities\Managers\CapabilityManager;
 use Guava\Capabilities\Managers\RoleManager;
+use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Gate;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -38,6 +40,18 @@ class CapabilitiesServiceProvider extends PackageServiceProvider
         });
         $this->app->bind(RoleManager::class, function () {
             return new RoleManager;
+        });
+    }
+
+    public function packageBooted()
+    {
+        Gate::before(function (User $user, string $ability) {
+            if (method_exists($user, 'hasCapability')) {
+//                return $user->hasCapability($ability, Filament::getTenant()) ?: null;
+                return $user->hasCapability($ability) ?: null;
+            }
+
+            return null;
         });
     }
 }

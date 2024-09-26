@@ -2,7 +2,7 @@
 
 namespace Guava\Capabilities\Managers;
 
-use Guava\Capabilities\Contracts\Role as RoleContract;
+use Guava\Capabilities\Contracts\Role as CapabilityContract;
 use Guava\Capabilities\Exceptions\InvalidRoleArgumentException;
 use Guava\Capabilities\Facades\Capabilities;
 use Guava\Capabilities\Models\Role;
@@ -10,13 +10,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class RoleManager
 {
-    public function getName(string | RoleContract $role): string
+    public function getName(string | CapabilityContract $role): string
     {
         if (is_string($role) && class_exists($role)) {
             $role = new $role;
         }
 
-        if ($role instanceof RoleContract) {
+        if ($role instanceof CapabilityContract) {
             $role = $role->getName();
         } elseif (! is_string($role)) {
             throw InvalidRoleArgumentException::make();
@@ -25,7 +25,7 @@ class RoleManager
         return $role;
     }
 
-    public function getRecord(string | RoleContract $role, ?Model $tenant = null, bool $create = true): ?Role
+    public function getRecord(string | CapabilityContract $role, ?Model $tenant = null, bool $create = true): ?Role
     {
         $name = $this->getName($role);
 

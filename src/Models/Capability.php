@@ -20,6 +20,12 @@ class Capability extends Model
 
     public function users(): MorphToMany
     {
+        $pivot = [];
+
+        if (config('capabilities.tenancy', false)) {
+            $pivot[] = config('capabilities.tenant_column', 'tenant_id');
+        }
+
         return $this
             ->morphedByMany(
                 config('capabilities.user_class', User::class),
@@ -28,17 +34,18 @@ class Capability extends Model
                 'assignee_id',
                 'capability_id',
             )
-            ->when(
-                config('capabilities.tenancy', false),
-                fn (MorphToMany $query) => $query->withPivot([
-                    config('capabilities.tenant_column', 'tenant_id'),
-                ]),
-            )
+            ->withPivot($pivot)
         ;
     }
 
     public function roles(): MorphToMany
     {
+        $pivot = [];
+
+        if (config('capabilities.tenancy', false)) {
+            $pivot[] = config('capabilities.tenant_column', 'tenant_id');
+        }
+
         return $this
             ->morphedByMany(
                 config('capabilities.role_class', Role::class),
@@ -47,12 +54,7 @@ class Capability extends Model
                 'assignee_id',
                 'role_id',
             )
-            ->when(
-                config('capabilities.tenancy', false),
-                fn (MorphToMany $query) => $query->withPivot([
-                    config('capabilities.tenant_column', 'tenant_id'),
-                ]),
-            )
+            ->withPivot($pivot)
         ;
     }
 }

@@ -3,7 +3,7 @@
 namespace Guava\Capabilities\Concerns;
 
 use Guava\Capabilities\Builders\RoleBuilder;
-use Guava\Capabilities\Contracts\Role as RoleContract;
+use Guava\Capabilities\Contracts\Role as CapabilityContract;
 use Guava\Capabilities\Exceptions\TenancyNotEnabledException;
 use Guava\Capabilities\Facades\RoleManager;
 use Guava\Capabilities\Models\Role;
@@ -46,7 +46,7 @@ trait HasRoles
             //                ->all();
         }
 
-        if (is_string($role) || $role instanceof RoleContract) {
+        if (is_string($role) || $role instanceof CapabilityContract) {
             $role = RoleManager::getRecord($role, $tenant);
         }
 
@@ -80,7 +80,7 @@ trait HasRoles
         ;
     }
 
-    public function role(string | RoleContract $role): RoleBuilder
+    public function role(string | CapabilityContract $role): RoleBuilder
     {
         return RoleBuilder::of($role)
             ->assignee($this)
