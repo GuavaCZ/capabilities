@@ -2,7 +2,8 @@
 
 namespace Guava\Capabilities;
 
-use Guava\Capabilities\Builders\RoleBuilder;
+use Arr;
+use Guava\Capabilities\Auth\Capability;
 use Guava\Capabilities\Commands\SyncCapabilitiesCommand;
 use Guava\Capabilities\Managers\CapabilityManager;
 use Guava\Capabilities\Managers\RoleManager;
@@ -45,10 +46,29 @@ class CapabilitiesServiceProvider extends PackageServiceProvider
 
     public function packageBooted()
     {
-        Gate::before(function (User $user, string $ability) {
+        Gate::before(function (User $user, string $ability, array $arguments) {
+            $record = Arr::first($arguments);
+
+            if (! $record) {
+                return null;
+            }
+
+            $policy = Gate::getPolicyFor($record);
+
+            if ($policy && method_exists($policy, $ability)) {
+                return null;
+            }
+
+            $capability = Capability::tryFrom($ability);
+
             if (method_exists($user, 'hasCapability')) {
-//                return $user->hasCapability($ability, Filament::getTenant()) ?: null;
-                return $user->hasCapability($ability) ?: null;
+
+                if ($capability) {
+                    $capability = $capability->get($record);
+                }
+
+                return $user->hasCapability($capability ?? $ability) ?: null;
+//                return $user->hasCapability($ability, ...$arguments) ?: null;
             }
 
             return null;

@@ -15,6 +15,8 @@ class Capability extends Model
         return [
             'name',
             'title',
+            'entity_type',
+            'entity_id',
         ];
     }
 

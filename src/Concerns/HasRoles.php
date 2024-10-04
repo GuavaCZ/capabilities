@@ -2,9 +2,12 @@
 
 namespace Guava\Capabilities\Concerns;
 
+use Guava\Capabilities\Builders\CapabilityConfiguration;
 use Guava\Capabilities\Builders\RoleBuilder;
+use Guava\Capabilities\Contracts\Capability;
 use Guava\Capabilities\Contracts\Role as CapabilityContract;
 use Guava\Capabilities\Exceptions\TenancyNotEnabledException;
+use Guava\Capabilities\Facades\Capabilities;
 use Guava\Capabilities\Facades\RoleManager;
 use Guava\Capabilities\Models\Role;
 use Illuminate\Database\Eloquent\Builder;
@@ -67,14 +70,47 @@ trait HasRoles
         return $this;
     }
 
-    public function hasCapability(string $name, ?Model $tenant = null): bool
+    public function hasCapability(string |\Guava\Capabilities\Models\Capability| array |Collection $capability, ?Model $tenant = null): bool
     {
+//        $configuration = CapabilityConfiguration::make($capability, $record);
+
+        $tenantId = null;
+
+        if (config('capabilities.tenancy', false)) {
+            $tenantId = $tenant?->getKey() ?? Capabilities::getTenantId();
+        }
+
+        if (is_string($capability)) {
+            $capability = \Guava\Capabilities\Models\Capability::where('name', $capability)->firstOrFail();
+        }
+
+        if (is_array($capability)) {
+            $capability = collect($capability);
+        }
+
+        if ($capability instanceof Collection) {
+            foreach ($capability as $cap) {
+                if (!$this->hasCapability($cap, $tenant)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         return $this->assignedRoles()
-            ->wherePivot(config('capabilities.tenant_column', 'tenant_id'), $tenant?->getKey())
+            ->wherePivot(config('capabilities.tenant_column', 'tenant_id'), $tenantId)
             ->whereHas(
                 'assignedCapabilities',
                 fn (Builder $query) => $query
-                    ->where('name', $name)
+                ->where('name', $capability->name)
+                    ->where('entity_type', $capability->entity_type)
+//                ->where(fn (Builder $query) => $query
+//                        ->whereNull('entity_id')
+//                        ->orWhere('entity_id', $capability->entity_id)
+//                )
+//                    ->whereIn('id', $capability->pluck('id'))
+//                    ->where('name', $configuration->getName())
+//                    ->where('name', $capability)
             )
             ->exists()
         ;
@@ -86,5 +122,4 @@ trait HasRoles
             ->assignee($this)
         ;
     }
-
 }

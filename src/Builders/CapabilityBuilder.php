@@ -30,6 +30,19 @@ class CapabilityBuilder
         return Capabilities::capability()->firstOrCreate($this->getColumns());
     }
 
+    public function assign() {
+        foreach ($this->getAssignees() as $assignee) {
+            $capability = $this->create();
+
+            $assignee->assignedCapabilities()->syncWithPivotValues(
+                $capability->getKey(),
+//                $this->getPivotColumns(),
+                [],
+                false,
+            );
+        }
+    }
+
     private function getColumns(): array
     {
         return [

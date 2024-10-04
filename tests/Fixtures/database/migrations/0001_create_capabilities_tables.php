@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('title')->nullable();
+            $table->nullableMorphs('entity');
             // TODO: Add "related" column so that a permission can be related to a specific record, like course.view.1 to view course of id 1
         });
 

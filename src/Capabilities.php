@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Capabilities
 {
+    protected $tenantId;
+
     public function role(): Builder
     {
         return config('capabilities.role_class', Role::class)::query();
@@ -30,5 +32,15 @@ class Capabilities
         }
 
         return str(class_basename($model))->kebab();
+    }
+
+    public function setTenantId(mixed $id): void
+    {
+        $this->tenantId = $id;
+    }
+
+    public function getTenantId(): mixed
+    {
+        return $this->tenantId;
     }
 }
