@@ -37,7 +37,7 @@ class TestCase extends Orchestra
         config()->set('capabilities.user_class', User::class);
         config()->set('capabilities.tenant_class', Tenant::class);
         config()->set('capabilities.role_class', Role::class);
-//        config()->set('capabilities.capability_class', Capability::class);
+        //        config()->set('capabilities.capability_class', Capability::class);
 
         $app->useDatabasePath(__DIR__.'/Fixtures/database');
     }

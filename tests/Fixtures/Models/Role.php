@@ -2,8 +2,8 @@
 
 namespace Tests\Fixtures\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Guava\Capabilities\Models\Role as BaseRole;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Role extends BaseRole
 {

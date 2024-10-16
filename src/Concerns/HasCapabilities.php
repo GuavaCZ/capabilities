@@ -23,7 +23,7 @@ trait HasCapabilities
 
         return $this->morphToMany(
             Capability::class,
-//            config('capabilities.capability_class', Capability::class),
+            //            config('capabilities.capability_class', Capability::class),
             'assignee',
             'assigned_capabilities',
             'assignee_id',
@@ -120,7 +120,7 @@ trait HasCapabilities
             $this->assignedCapabilities()->syncWithPivotValues([
                 $capability->getKey(),
             ], $pivot);
-        } else{
+        } else {
             $this->assignedCapabilities()->firstOrCreate([
 //                'assignee_id' => $this->getKey(),
 //                'assignee_type' => $this->getMorphClass(),
