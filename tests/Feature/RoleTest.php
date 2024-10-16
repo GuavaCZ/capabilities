@@ -19,7 +19,8 @@ class RoleTest extends TestCase
         $this->assertTrue($user->assignedRoles->contains(Role::firstWhere('name', 'my-custom-role')));
     }
 
-    public function test_cant_assign_same_custom_role_multiple_times() {
+    public function test_cant_assign_same_custom_role_multiple_times()
+    {
 
         $user = User::factory()->create();
 
@@ -44,7 +45,9 @@ class RoleTest extends TestCase
                 ->first()
         ));
     }
-    public function test_cant_assign_same_custom_tenant_role_multiple_times() {
+
+    public function test_cant_assign_same_custom_tenant_role_multiple_times()
+    {
 
         $user = User::factory()->create();
         $tenant = Tenant::factory()->create();
@@ -56,19 +59,21 @@ class RoleTest extends TestCase
         $this->assertCount(1, $user->assignedRoles);
     }
 
-    public function test_can_assign_preset_role() {
+    public function test_can_assign_preset_role()
+    {
         $user = User::factory()->create();
 
-        $user->assignRole(new AdminRole());
+        $user->assignRole(new AdminRole);
 
         $this->assertTrue($user->assignedRoles->contains(Role::firstWhere('name', 'admin')));
     }
 
-    public function test_cant_assign_preset_role_multiple_times() {
+    public function test_cant_assign_preset_role_multiple_times()
+    {
         $user = User::factory()->create();
 
-        $user->assignRole(new AdminRole());
-        $user->assignRole(new AdminRole());
+        $user->assignRole(new AdminRole);
+        $user->assignRole(new AdminRole);
 
         $this->assertTrue($user->assignedRoles->contains(Role::firstWhere('name', 'admin')));
         $this->assertCount(1, $user->assignedRoles);

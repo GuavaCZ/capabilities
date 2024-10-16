@@ -20,7 +20,7 @@ abstract class RoleConfiguration
 
     public function find(?Model $tenant = null): ?Role
     {
-        if (!config('capabilities.tenancy', false) && $tenant) {
+        if (! config('capabilities.tenancy', false) && $tenant) {
             throw new \Exception('Tenant roles can only be used with tenancy enabled.');
         }
 
@@ -28,7 +28,7 @@ abstract class RoleConfiguration
             throw new \Exception('Global roles cannot have tenants');
         }
 
-        if (!$this->isGlobal() && !$tenant) {
+        if (! $this->isGlobal() && ! $tenant) {
             throw new \Exception('Tenant roles must have tenants');
         }
 
@@ -51,6 +51,7 @@ abstract class RoleConfiguration
         /** @var Role $record */
         $record = Capabilities::role()->create($attributes);
         $record->assignCapability($this->capabilities(), $tenant);
+
         return $record;
     }
 }

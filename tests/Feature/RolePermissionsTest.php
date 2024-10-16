@@ -48,6 +48,7 @@ class RolePermissionsTest extends TestCase
             $this->assertTrue($user->hasCapability($capability->get(Post::class)));
         }
     }
+
     public function test_user_can_have_direct_record_permissions_via_record_permissions()
     {
         $user = User::factory()->create();
@@ -128,11 +129,12 @@ class RolePermissionsTest extends TestCase
         }
     }
 
-    public function test_user_can_have_record_permissions_via_preset_role_admin() {
+    public function test_user_can_have_record_permissions_via_preset_role_admin()
+    {
         $user = User::factory()->create();
         $document = Document::factory()->create();
         $post = Post::factory()->create();
-        $user->assignRole(new AdminRole());
+        $user->assignRole(new AdminRole);
 
         foreach (Capability::cases() as $capability) {
             $this->assertTrue($user->hasCapability($capability->get($document)));
@@ -140,12 +142,13 @@ class RolePermissionsTest extends TestCase
         }
     }
 
-    public function test_user_can_have_record_permissions_via_preset_role_member() {
+    public function test_user_can_have_record_permissions_via_preset_role_member()
+    {
         $user = User::factory()->create();
         $tenant = Tenant::factory()->create();
         $document = Document::factory()->create();
         $post = Post::factory()->create();
-        $user->assignRole(new MemberRole(), $tenant);
+        $user->assignRole(new MemberRole, $tenant);
 
         foreach (Capability::cases() as $capability) {
             $this->assertFalse($user->hasCapability($capability->get($document)));
