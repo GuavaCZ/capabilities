@@ -89,11 +89,12 @@ class RoleTest extends TestCase
             'custom_attribute_2' => 'value2',
         ]));
 
-        $this->assertTrue($user->assignedRoles->contains(Role::query()
-            ->where('name', 'my-custom-role')
-            ->where('custom_attribute_1', 'value1')
-            ->where('custom_attribute_2', 'value2')
-            ->first()
+        $this->assertTrue($user->assignedRoles->contains(
+            Role::query()
+                ->where('name', 'my-custom-role')
+                ->where('custom_attribute_1', 'value1')
+                ->where('custom_attribute_2', 'value2')
+                ->first()
         ));
     }
 }

@@ -23,7 +23,7 @@ trait HasRoles
 
         return $this->morphToMany(
             Role::class,
-//            config('capabilities.role_class', Role::class),
+            //            config('capabilities.role_class', Role::class),
             'assignee',
             'assigned_roles',
             'assignee_id',
