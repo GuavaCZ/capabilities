@@ -122,8 +122,8 @@ trait HasCapabilities
             ], $pivot);
         } else {
             $this->assignedCapabilities()->firstOrCreate([
-//                'assignee_id' => $this->getKey(),
-//                'assignee_type' => $this->getMorphClass(),
+                //                'assignee_id' => $this->getKey(),
+                //                'assignee_type' => $this->getMorphClass(),
                 'name' => $capability->getName(),
                 'entity_type' => $capability->getEntityType(),
                 'entity_id' => $capability->getEntityKey(),
