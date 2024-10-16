@@ -59,13 +59,6 @@ class CapabilitiesServiceProvider extends PackageServiceProvider
                     $capability = $capability->get($record);
                 }
 
-                if (is_string($capability)) {
-                    dd($capability);
-                }
-                if (is_null($capability)) {
-                    dd($ability);
-                }
-
                 $tenant = null;
 
                 if ($id = \Guava\Capabilities\Facades\Capabilities::getTenantId()) {
