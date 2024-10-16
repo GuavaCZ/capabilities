@@ -23,6 +23,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('title')->nullable();
+            $table->string('custom_attribute_1')->nullable();
+            $table->string('custom_attribute_2')->nullable();
 
             if (config('capabilities.tenancy', false)) {
                 $table->foreignIdFor(config('capabilities.tenant_class'))

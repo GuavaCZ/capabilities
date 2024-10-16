@@ -36,4 +36,9 @@ class MemberRole extends RoleConfiguration
     {
         return false;
     }
+
+    public function getAttributes(): array
+    {
+        return [];
+    }
 }

@@ -5,6 +5,8 @@ namespace Tests;
 use Guava\Capabilities\CapabilitiesServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Tests\Fixtures\Models\Capability;
+use Tests\Fixtures\Models\Role;
 use Tests\Fixtures\Models\Tenant;
 use Tests\Fixtures\Models\User;
 
@@ -34,6 +36,8 @@ class TestCase extends Orchestra
         config()->set('capabilities.tenancy', true);
         config()->set('capabilities.user_class', User::class);
         config()->set('capabilities.tenant_class', Tenant::class);
+        config()->set('capabilities.role_class', Role::class);
+//        config()->set('capabilities.capability_class', Capability::class);
 
         $app->useDatabasePath(__DIR__.'/Fixtures/database');
     }

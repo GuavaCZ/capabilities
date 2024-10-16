@@ -36,4 +36,9 @@ class AdminRole extends RoleConfiguration
     {
         return true;
     }
+
+    public function getAttributes(): array
+    {
+        return [];
+    }
 }

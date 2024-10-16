@@ -14,11 +14,11 @@ abstract class RoleConfiguration
 
     abstract public function title(): ?string;
 
-    abstract public function isDefault(): bool;
+    abstract public function getAttributes(): array;
 
     abstract public function isGlobal(): bool;
 
-    public function find(?Model $tenant = null): ?Role
+    public function find(?Model $tenant = null): ?Model
     {
         if (! config('capabilities.tenancy', false) && $tenant) {
             throw new \Exception('Tenant roles can only be used with tenancy enabled.');
@@ -35,7 +35,7 @@ abstract class RoleConfiguration
         $attributes = [
             'name' => $this->name(),
             'title' => $this->title(),
-            'is_default' => $this->isDefault(),
+            ...$this->getAttributes(),
         ];
 
         if ($this->isGlobal()) {
@@ -44,12 +44,13 @@ abstract class RoleConfiguration
             $attributes[config('capabilities.tenant_column', 'tenant_id')] = $tenant->getKey();
         }
 
-        if ($record = Capabilities::role()->first($attributes)) {
+        if ($record = Capabilities::role()->where($attributes)->first()) {
             return $record;
         }
 
-        /** @var Role $record */
         $record = Capabilities::role()->create($attributes);
+        $record = Role::find($record->getKey());
+
         $record->assignCapability($this->capabilities(), $tenant);
 
         return $record;

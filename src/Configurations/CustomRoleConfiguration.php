@@ -10,6 +10,7 @@ class CustomRoleConfiguration extends RoleConfiguration
         private string $name,
         private ?string $title = null,
         private ?Model $tenant = null,
+        private array $attributes = [],
     ) {}
 
     public function capabilities(): array
@@ -27,13 +28,13 @@ class CustomRoleConfiguration extends RoleConfiguration
         return $this->title;
     }
 
-    public function isDefault(): bool
-    {
-        return false;
-    }
-
     public function isGlobal(): bool
     {
         return $this->tenant === null;
+    }
+
+    public function getAttributes(): array
+    {
+        return $this->attributes;
     }
 }

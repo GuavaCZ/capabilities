@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Guava\Capabilities\Configurations\CustomRoleConfiguration;
 use Tests\Fixtures\Models\Role;
 use Tests\Fixtures\Models\Tenant;
 use Tests\Fixtures\Models\User;
@@ -77,5 +78,22 @@ class RoleTest extends TestCase
 
         $this->assertTrue($user->assignedRoles->contains(Role::firstWhere('name', 'admin')));
         $this->assertCount(1, $user->assignedRoles);
+    }
+
+    public function test_can_create_custom_role_with_custom_attributes()
+    {
+        $user = User::factory()->create();
+
+        $user->assignRole(new CustomRoleConfiguration('my-custom-role', attributes: [
+            'custom_attribute_1' => 'value1',
+            'custom_attribute_2' => 'value2',
+        ]));
+
+        $this->assertTrue($user->assignedRoles->contains(Role::query()
+            ->where('name', 'my-custom-role')
+            ->where('custom_attribute_1', 'value1')
+            ->where('custom_attribute_2', 'value2')
+            ->first()
+        ));
     }
 }

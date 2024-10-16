@@ -22,7 +22,8 @@ trait HasRoles
         }
 
         return $this->morphToMany(
-            config('capabilities.role_class', Role::class),
+            Role::class,
+//            config('capabilities.role_class', Role::class),
             'assignee',
             'assigned_roles',
             'assignee_id',
@@ -83,21 +84,24 @@ trait HasRoles
         return $this->hasRoleCapability($capability, $tenant);
     }
 
-    public function hasRoleCapability(CapabilityConfiguration | array | Collection $capability, ?Model $tenant = null): bool
+    public function hasRoleCapability(CapabilityConfiguration | array | Collection $capabilities, ?Model $tenant = null): bool
     {
-        if (is_array($capability)) {
-            $capability = collect($capability);
+        if (is_array($capabilities)) {
+            $capabilities = collect($capabilities);
         }
 
-        if ($capability instanceof Collection) {
-            foreach ($capability as $cap) {
-                if (! $this->hasRoleCapability($cap, $tenant)) {
+        if ($capabilities instanceof Collection) {
+            foreach ($capabilities as $capability) {
+                if (! $this->hasRoleCapability($capability, $tenant)) {
                     return false;
                 }
             }
 
             return true;
         }
+
+        /** @var CapabilityConfiguration $capability */
+        $capability = $capabilities;
 
         foreach ($this->assignedRoles as $role) {
             if (! $role->hasDirectCapability($capability, $tenant)) {
