@@ -2,11 +2,9 @@
 
 namespace Tests;
 
-use Closure;
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Schema\Blueprint;
-use Orchestra\Testbench\TestCase as Orchestra;
 use Guava\Capabilities\CapabilitiesServiceProvider;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Orchestra\Testbench\TestCase as Orchestra;
 use Tests\Fixtures\Models\Tenant;
 use Tests\Fixtures\Models\User;
 

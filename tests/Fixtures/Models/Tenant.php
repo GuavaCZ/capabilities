@@ -2,11 +2,11 @@
 
 namespace Tests\Fixtures\Models;
 
-use Guava\Capabilities\Concerns\HasRolesAndCapabilities;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tenant extends Model {
+class Tenant extends Model
+{
     use HasFactory;
 
     protected $fillable = [
@@ -14,5 +14,4 @@ class Tenant extends Model {
     ];
 
     public $timestamps = false;
-
 }
