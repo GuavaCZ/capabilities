@@ -65,7 +65,14 @@ class CapabilitiesServiceProvider extends PackageServiceProvider
                 if (is_null($capability)) {
                     dd($ability);
                 }
-                return $user->hasCapability($capability ?? $ability);
+
+                $tenant = null;
+
+                if ($id = \Guava\Capabilities\Facades\Capabilities::getTenantId()) {
+                    $tenant = \Guava\Capabilities\Facades\Capabilities::tenant()->find($id);
+                }
+
+                return $user->hasCapability($capability ?? $ability, $tenant);
             }
 
             return null;

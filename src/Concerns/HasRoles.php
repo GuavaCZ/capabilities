@@ -104,11 +104,11 @@ trait HasRoles
         $capability = $capabilities;
 
         foreach ($this->assignedRoles as $role) {
-            if (! $role->hasDirectCapability($capability, $tenant)) {
-                return false;
+            if ($role->hasDirectCapability($capability, $tenant)) {
+                return true;
             }
         }
 
-        return $this->assignedRoles->count() > 0;
+        return false;
     }
 }
