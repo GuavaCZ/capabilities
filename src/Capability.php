@@ -19,6 +19,7 @@ enum Capability: string implements CapabilityContract
     case ForceDelete = 'forceDelete';
     case ForceDeleteAny = 'forceDeleteAny';
     case Replicate = 'replicate';
+    case Reorder = 'reorder';
 
     public function model(): ?string
     {

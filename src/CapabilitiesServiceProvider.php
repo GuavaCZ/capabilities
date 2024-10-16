@@ -59,7 +59,13 @@ class CapabilitiesServiceProvider extends PackageServiceProvider
                     $capability = $capability->get($record);
                 }
 
-                return $user->hasCapability($capability ?? $ability) ?: null;
+                if (is_string($capability)) {
+                    dd($capability);
+                }
+                if (is_null($capability)) {
+                    dd($ability);
+                }
+                return $user->hasCapability($capability ?? $ability);
             }
 
             return null;

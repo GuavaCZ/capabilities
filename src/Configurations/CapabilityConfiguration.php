@@ -3,6 +3,7 @@
 namespace Guava\Capabilities\Configurations;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class CapabilityConfiguration
 {
@@ -25,7 +26,7 @@ class CapabilityConfiguration
     {
         return $this->entity instanceof Model
             ? $this->entity->getMorphClass()
-            : $this->entity;
+            : Relation::getMorphAlias($this->entity);
     }
 
     public function getEntityKey(): mixed
