@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('title')->nullable();
-            // TODO: Add "related" column so that a permission can be related to a specific record, like course.view.1 to view course of id 1
+            $table->nullableMorphs('entity');
         });
 
         Schema::create('roles', function (Blueprint $table) {
