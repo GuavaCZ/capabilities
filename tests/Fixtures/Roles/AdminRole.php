@@ -7,8 +7,8 @@ use Guava\Capabilities\Configurations\RoleConfiguration;
 use Tests\Fixtures\Models\Document;
 use Tests\Fixtures\Models\Post;
 
-class AdminRole extends RoleConfiguration {
-
+class AdminRole extends RoleConfiguration
+{
     public function capabilities(): array
     {
         return [

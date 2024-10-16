@@ -68,7 +68,7 @@ class Capability extends Model
             get: function () {
                 $model = Relation::getMorphedModel($this->entity_type) ?? $this->entity_type;
 
-                if (!$model) {
+                if (! $model) {
                     return null;
                 }
 

@@ -5,7 +5,8 @@ namespace Tests\Fixtures\Models;
 use Guava\Capabilities\Concerns\HasRolesAndCapabilities;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class User extends \Illuminate\Foundation\Auth\User {
+class User extends \Illuminate\Foundation\Auth\User
+{
     use HasFactory;
     use HasRolesAndCapabilities;
 
@@ -14,5 +15,4 @@ class User extends \Illuminate\Foundation\Auth\User {
     ];
 
     public $timestamps = false;
-
 }

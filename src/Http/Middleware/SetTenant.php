@@ -4,7 +4,8 @@ namespace Guava\Capabilities\Http\Middleware;
 
 use Closure;
 
-class SetTenant {
+class SetTenant
+{
     /**
      * Set the proper Bouncer scope for the incoming request.
      *
@@ -13,7 +14,6 @@ class SetTenant {
      */
     public function handle($request, Closure $next)
     {
-
 
         return $next($request);
     }
