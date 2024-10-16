@@ -96,6 +96,9 @@ trait HasCapabilities
         }
 
         if ($capabilities instanceof Collection) {
+            if ($detaching) {
+                $this->assignedCapabilities()->detach();
+            }
             foreach ($capabilities as $capability) {
                 $this->assignCapability($capability, $tenant, $detaching);
             }
@@ -117,13 +120,19 @@ trait HasCapabilities
         }
 
         if ($capability instanceof Capability) {
-            $this->assignedCapabilities()->syncWithPivotValues([
-                $capability->getKey(),
-            ], $pivot);
+            $this->assignedCapabilities()
+                ->syncWithPivotValues(
+                    [
+                        $capability->getKey(),
+                    ],
+                    $pivot,
+                    $detaching
+                )
+            ;
         } else {
             $this->assignedCapabilities()->firstOrCreate([
-//                'assignee_id' => $this->getKey(),
-//                'assignee_type' => $this->getMorphClass(),
+                //                'assignee_id' => $this->getKey(),
+                //                'assignee_type' => $this->getMorphClass(),
                 'name' => $capability->getName(),
                 'entity_type' => $capability->getEntityType(),
                 'entity_id' => $capability->getEntityKey(),
