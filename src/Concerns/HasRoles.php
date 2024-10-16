@@ -2,15 +2,11 @@
 
 namespace Guava\Capabilities\Concerns;
 
-use Guava\Capabilities\Builders\CapabilityConfiguration;
-use Guava\Capabilities\Builders\RoleBuilder;
-use Guava\Capabilities\Contracts\Capability;
-use Guava\Capabilities\Contracts\Role as CapabilityContract;
+use Guava\Capabilities\Configurations\CapabilityConfiguration;
+use Guava\Capabilities\Configurations\CustomRoleConfiguration;
+use Guava\Capabilities\Configurations\RoleConfiguration;
 use Guava\Capabilities\Exceptions\TenancyNotEnabledException;
-use Guava\Capabilities\Facades\Capabilities;
-use Guava\Capabilities\Facades\RoleManager;
 use Guava\Capabilities\Models\Role;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Collection;
@@ -36,32 +32,44 @@ trait HasRoles
         ;
     }
 
-    public function assignRole(Role | array | Collection $role, ?Model $tenant = null, bool $detaching = false): static
+    public function assignRole(Role | string | RoleConfiguration | array | Collection $roles, ?Model $tenant = null, bool $detaching = false): static
     {
         if (! config('capabilities.tenancy', false) && $tenant) {
             throw TenancyNotEnabledException::make();
         }
 
-        if (is_array($role) || $role instanceof Collection) {
-            throw new \Exception('Not implemented');
-            //            $capability = Capabilities::getRecords($capability, $model)
-            //                ->pluck('id')
-            //                ->all();
+        if (is_array($roles)) {
+            $roles = collect($roles);
         }
 
-        if (is_string($role) || $role instanceof CapabilityContract) {
-            $role = RoleManager::getRecord($role, $tenant);
+        if ($roles instanceof Collection) {
+            foreach ($roles as $role) {
+                $this->assignRole($role, $tenant);
+            }
+
+            return $this;
+        }
+
+        /** @var string|Role|RoleConfiguration $role */
+        $role = $roles;
+        if (is_string($role)) {
+            $role = new CustomRoleConfiguration($role, tenant: $tenant);
+        }
+
+        if ($role instanceof RoleConfiguration) {
+            $role = $role->find($tenant);
         }
 
         $pivot = [];
 
-        if (config('capabilities.tenancy', false)) {
-            $pivot[config('capabilities.tenant_column')] = $role->getAttribute(config('capabilities.tenant_column')) ?? $tenant?->getKey();
+        if ($tenant) {
+            $tenantId = $tenant->getKey();
+            $pivot[config('capabilities.tenant_column')] = $tenantId;
         }
 
         $this->assignedRoles()
             ->syncWithPivotValues(
-                $role,
+                [$role->getKey()],
                 $pivot,
                 $detaching
             )
@@ -70,56 +78,33 @@ trait HasRoles
         return $this;
     }
 
-    public function hasCapability(string |\Guava\Capabilities\Models\Capability| array |Collection $capability, ?Model $tenant = null): bool
+    public function hasCapability(CapabilityConfiguration | array | Collection $capability, ?Model $tenant = null): bool
     {
-//        $configuration = CapabilityConfiguration::make($capability, $record);
+        return $this->hasRoleCapability($capability, $tenant);
+    }
 
-        $tenantId = null;
-
-        if (config('capabilities.tenancy', false)) {
-            $tenantId = $tenant?->getKey() ?? Capabilities::getTenantId();
-        }
-
-        if (is_string($capability)) {
-            $capability = \Guava\Capabilities\Models\Capability::where('name', $capability)->firstOrFail();
-        }
-
+    public function hasRoleCapability(CapabilityConfiguration | array | Collection $capability, ?Model $tenant = null): bool
+    {
         if (is_array($capability)) {
             $capability = collect($capability);
         }
 
         if ($capability instanceof Collection) {
             foreach ($capability as $cap) {
-                if (!$this->hasCapability($cap, $tenant)) {
+                if (! $this->hasRoleCapability($cap, $tenant)) {
                     return false;
                 }
             }
+
             return true;
         }
 
-        return $this->assignedRoles()
-            ->wherePivot(config('capabilities.tenant_column', 'tenant_id'), $tenantId)
-            ->whereHas(
-                'assignedCapabilities',
-                fn (Builder $query) => $query
-                ->where('name', $capability->name)
-                    ->where('entity_type', $capability->entity_type)
-//                ->where(fn (Builder $query) => $query
-//                        ->whereNull('entity_id')
-//                        ->orWhere('entity_id', $capability->entity_id)
-//                )
-//                    ->whereIn('id', $capability->pluck('id'))
-//                    ->where('name', $configuration->getName())
-//                    ->where('name', $capability)
-            )
-            ->exists()
-        ;
-    }
+        foreach ($this->assignedRoles as $role) {
+            if (! $role->hasDirectCapability($capability, $tenant)) {
+                return false;
+            }
+        }
 
-    public function role(string | CapabilityContract $role): RoleBuilder
-    {
-        return RoleBuilder::of($role)
-            ->assignee($this)
-        ;
+        return $this->assignedRoles->count() > 0;
     }
 }

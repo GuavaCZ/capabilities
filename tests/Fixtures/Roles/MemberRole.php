@@ -2,27 +2,38 @@
 
 namespace Tests\Fixtures\Roles;
 
-use Guava\Capabilities\Auth\RoleRegistration;
+use Guava\Capabilities\Capability;
+use Guava\Capabilities\Configurations\RoleConfiguration;
+use Tests\Fixtures\Models\Post;
 
-class MemberRole extends RoleRegistration {
-
+class MemberRole extends RoleConfiguration
+{
     public function capabilities(): array
     {
-        return [
-            'course.view',
-            'course.create',
-            'course.edit',
-            'course.delete',
-        ];
+        return Capability::only([
+            Capability::View,
+            Capability::Create,
+            Capability::Update,
+        ], Post::class);
     }
 
     public function name(): string
     {
-        return 'admin';
+        return 'member';
     }
 
-    public function title(): string
+    public function title(): ?string
     {
-        return 'Administrator';
+        return 'Member';
+    }
+
+    public function isDefault(): bool
+    {
+        return true;
+    }
+
+    public function isGlobal(): bool
+    {
+        return false;
     }
 }

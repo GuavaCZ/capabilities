@@ -2,8 +2,10 @@
 
 namespace Guava\Capabilities\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Auth\User;
 
 class Capability extends Model
@@ -58,5 +60,24 @@ class Capability extends Model
             )
             ->withPivot($pivot)
         ;
+    }
+
+    protected function entity(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $model = Relation::getMorphedModel($this->entity_type) ?? $this->entity_type;
+
+                if (!$model) {
+                    return null;
+                }
+
+                return $model::find($this->entity_id);
+            },
+            set: function (null | Model | string $value) {
+                $this->entity_type = $value instanceof Model ? $value->getMorphClass() : $value;
+                $this->entity_id = $value instanceof Model ? $value->getKey() : null;
+            }
+        );
     }
 }

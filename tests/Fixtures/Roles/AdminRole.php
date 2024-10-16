@@ -2,23 +2,38 @@
 
 namespace Tests\Fixtures\Roles;
 
-use Guava\Capabilities\Auth\RoleRegistration;
-use Guava\Capabilities\Contracts\Role;
+use Guava\Capabilities\Capability;
+use Guava\Capabilities\Configurations\RoleConfiguration;
+use Tests\Fixtures\Models\Document;
+use Tests\Fixtures\Models\Post;
 
-class AdminRole implements Role {
+class AdminRole extends RoleConfiguration {
 
     public function capabilities(): array
     {
         return [
-            'course.view',
-            'course.create',
-            'course.edit',
-            'course.delete',
+            ...Capability::all(Post::class),
+            ...Capability::all(Document::class),
         ];
     }
 
-    public function getName(): string
+    public function name(): string
     {
         return 'admin';
+    }
+
+    public function title(): ?string
+    {
+        return 'Administrator';
+    }
+
+    public function isDefault(): bool
+    {
+        return true;
+    }
+
+    public function isGlobal(): bool
+    {
+        return true;
     }
 }

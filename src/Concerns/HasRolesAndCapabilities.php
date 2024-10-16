@@ -2,21 +2,20 @@
 
 namespace Guava\Capabilities\Concerns;
 
-use Guava\Capabilities\Models\Capability;
+use Guava\Capabilities\Configurations\CapabilityConfiguration;
 use Illuminate\Database\Eloquent\Model;
-use Guava\Capabilities\Contracts\Capability as CapabilityContract;
 use Illuminate\Support\Collection;
 
 trait HasRolesAndCapabilities
 {
     use HasCapabilities {
-        HasCapabilities::hasCapability as hasDirectCapability;
+        HasCapabilities::hasCapability as traitHasDirectCapability;
     }
     use HasRoles {
-        HasRoles::hasCapability as hasRoleCapability;
+        HasRoles::hasCapability as traitHasRoleCapability;
     }
 
-    public function hasCapability(string | Capability | array |Collection $capability, ?Model $tenant = null): bool
+    public function hasCapability(CapabilityConfiguration | array | Collection $capability, ?Model $tenant = null): bool
     {
         return $this->hasDirectCapability($capability, $tenant) || $this->hasRoleCapability($capability, $tenant);
     }

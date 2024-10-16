@@ -1,9 +1,9 @@
 <?php
 
-namespace Guava\Capabilities\Auth;
+namespace Guava\Capabilities;
 
+use Guava\Capabilities\Configurations\CapabilityConfiguration;
 use Guava\Capabilities\Contracts\Capability as CapabilityContract;
-use Guava\Capabilities\Models\Capability as CapabilityModel;
 use Illuminate\Database\Eloquent\Model;
 
 enum Capability: string implements CapabilityContract
@@ -35,40 +35,24 @@ enum Capability: string implements CapabilityContract
         return $this->value;
     }
 
-    public function get(null | string | Model $record = null): CapabilityModel
+    public function get(null | string | Model $record = null): CapabilityConfiguration
     {
         return self::id($this, $record);
     }
 
-    public function record(null | string | Model $record = null): CapabilityModel
+    public function record(null | string | Model $record = null): CapabilityConfiguration
     {
         return self::id($this, $record);
     }
 
-    public static function id(string | Capability $capability, null | string | Model $record = null): CapabilityModel
+    public static function id(string | Capability $capability, null | string | Model $record = null): CapabilityConfiguration
     {
-        $model = null;
-
-        if (is_string($record)) {
-            $model = $record;
-            $record = null;
-        }
-
-        if ($record instanceof Model) {
-            $model = $record::class;
-        }
-
-        $type = ! $model ? null : app($model)->getMorphClass();
         $name = is_string($capability) ? $capability : $capability->getName();
 
-        return CapabilityModel::firstOrCreate([
-            'name' => $name,
-            'entity_type' => $type,
-//            'entity_id' => $record?->getKey(),
-        ]);
+        return new CapabilityConfiguration($name, $record);
     }
 
-    public static function custom(string $name, null | string | Model $record = null): string
+    public static function custom(string $name, null | string | Model $record = null): CapabilityConfiguration
     {
         return self::id($name, $record);
     }
